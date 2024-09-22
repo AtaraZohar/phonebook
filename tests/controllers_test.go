@@ -132,13 +132,11 @@ func TestCreateAndDeleteContact(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
 
-	// התחבר לדאטה בייס
 	db, err := database.Connect()
 	if err != nil {
 		t.Fatalf("Failed to connect to the database: %v", err)
 	}
 
-	// יצירת בקר של אנשי קשר
 	contactController := controllers.NewContactController(db)
 
 	router.POST("/contacts", contactController.CreateContact)
@@ -203,7 +201,6 @@ func TestCreateAndSearchContact(t *testing.T) {
 		t.Fatalf("Failed to connect to the database: %v", err)
 	}
 
-	// יצירת בקר של אנשי קשר
 	contactController := controllers.NewContactController(db)
 
 	router.POST("/contacts", contactController.CreateContact)
@@ -267,13 +264,11 @@ func TestGetPaginatedContacts(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
 
-	// התחבר לדאטה בייס
 	db, err := database.Connect()
 	if err != nil {
 		t.Fatalf("Failed to connect to the database: %v", err)
 	}
 
-	// יצירת בקר של אנשי קשר
 	contactController := controllers.NewContactController(db)
 
 	router.GET("/contacts", contactController.GetContacts)
@@ -292,7 +287,6 @@ func TestGetPaginatedContacts(t *testing.T) {
 	var contacts []models.Contact
 	json.NewDecoder(resp.Body).Decode(&contacts)
 
-	// בדוק שהתוצאה לא עולה על 10
 	if len(contacts) > 10 {
 		t.Errorf("Expected contacts not to exceed 10, got %d", len(contacts))
 	}
