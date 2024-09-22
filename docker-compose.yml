@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  db:
+    image: 'postgres:13'
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./config:/docker-entrypoint-initdb.d
+
+  app:
+    build: .
+    ports:
+      - '8080:8080'
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://myuser:mypassword@db:5432/mydatabase
+    volumes:
+      - ./logs:/app/logs
+
+  tests:
+    build: .
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://myuser:mypassword@db:5432/mydatabase
+    command: go test ./tests
+
+volumes:
+  postgres_data: {}
