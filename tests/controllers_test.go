@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strconv"
 	"testing"
 
@@ -14,23 +15,39 @@ import (
 	"phonebook/models"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
+
+var (
+	db                *gorm.DB
+	contactController *controllers.ContactController
+)
+
+func setup() {
+	var err error
+	db, err = database.Connect()
+	if err != nil {
+		panic("Failed to connect to the database")
+	}
+
+	// Initialize the contact controller
+	contactController = controllers.NewContactController(db)
+}
+
+func TestMain(m *testing.M) {
+	setup()
+	code := m.Run()
+	os.Exit(code)
+}
 
 func TestCreateAndUpdateContact(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
 
-	db, err := database.Connect()
-	if err != nil {
-		t.Fatalf("Failed to connect to the database: %v", err)
-	}
-
-	contactController := controllers.NewContactController(db)
-
 	router.POST("/contacts", contactController.CreateContact)
 	router.PUT("/contacts/:id", contactController.UpdateContact)
 
-	newContact := models.Contact{FirstName: "Atara", LastName: "Zohar", PhoneNumber: "123-76549", Address: "23 Rotchaild"}
+	newContact := models.Contact{FirstName: "Alice", LastName: "Johnson", PhoneNumber: "555-1234", Address: "123 Main St"}
 	jsonData, _ := json.Marshal(newContact)
 	req, _ := http.NewRequest("POST", "/contacts", bytes.NewBuffer(jsonData))
 	req.Header.Set("Content-Type", "application/json")
@@ -47,8 +64,8 @@ func TestCreateAndUpdateContact(t *testing.T) {
 	// Check response body
 	var createdContact models.Contact
 	json.NewDecoder(resp.Body).Decode(&createdContact)
-	if createdContact.FirstName != "Atara" {
-		t.Errorf("Expected FirstName to be 'Atara', got '%s'", createdContact.FirstName)
+	if createdContact.FirstName != "Alice" {
+		t.Errorf("Expected FirstName to be 'Alice', got '%s'", createdContact.FirstName)
 	}
 
 	// Prepare the request לעדכון איש הקשר
@@ -82,17 +99,10 @@ func TestCreateContact(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
 
-	db, err := database.Connect()
-	if err != nil {
-		t.Fatalf("Failed to connect to the database: %v", err)
-	}
-
-	contactController := controllers.NewContactController(db)
-
 	router.POST("/contacts", contactController.CreateContact)
 
 	// Prepare the request
-	newContact := models.Contact{FirstName: "Tom", LastName: "Ridel", PhoneNumber: "555-9876", Address: "90 Oxford"}
+	newContact := models.Contact{FirstName: "Alice", LastName: "Smith", PhoneNumber: "555-9876", Address: "789 Oak St"}
 	jsonData, _ := json.Marshal(newContact)
 	req, _ := http.NewRequest("POST", "/contacts", bytes.NewBuffer(jsonData))
 	req.Header.Set("Content-Type", "application/json")
@@ -131,13 +141,6 @@ func TestCreateContact(t *testing.T) {
 func TestCreateAndDeleteContact(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-
-	db, err := database.Connect()
-	if err != nil {
-		t.Fatalf("Failed to connect to the database: %v", err)
-	}
-
-	contactController := controllers.NewContactController(db)
 
 	router.POST("/contacts", contactController.CreateContact)
 	router.DELETE("/contacts/:id", contactController.DeleteContact)
@@ -196,18 +199,11 @@ func TestCreateAndSearchContact(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
 
-	db, err := database.Connect()
-	if err != nil {
-		t.Fatalf("Failed to connect to the database: %v", err)
-	}
-
-	contactController := controllers.NewContactController(db)
-
 	router.POST("/contacts", contactController.CreateContact)
 	router.GET("/contacts/search", contactController.SearchContacts)
 
 	// Prepare the request to create a new contact
-	newContact := models.Contact{FirstName: "Shshana", LastName: "Zohar", PhoneNumber: "054-4545678", Address: "15 Hillel"}
+	newContact := models.Contact{FirstName: "zohar", LastName: "atara", PhoneNumber: "555-9876", Address: "789 Oak St"}
 	jsonData, _ := json.Marshal(newContact)
 	req, _ := http.NewRequest("POST", "/contacts", bytes.NewBuffer(jsonData))
 	req.Header.Set("Content-Type", "application/json")
@@ -263,13 +259,6 @@ func TestCreateAndSearchContact(t *testing.T) {
 func TestGetPaginatedContacts(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-
-	db, err := database.Connect()
-	if err != nil {
-		t.Fatalf("Failed to connect to the database: %v", err)
-	}
-
-	contactController := controllers.NewContactController(db)
 
 	router.GET("/contacts", contactController.GetContacts)
 
