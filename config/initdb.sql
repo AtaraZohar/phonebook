@@ -1,4 +1,3 @@
--- יצירת הטבלה של אנשי קשר
 CREATE TABLE contacts (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(50) NOT NULL,
@@ -7,7 +6,6 @@ CREATE TABLE contacts (
     address TEXT
 );
 
--- הוספת נתונים לדוגמה
 INSERT INTO contacts (first_name, last_name, phone_number, address) 
 VALUES 
     ('John', 'Doe', '123-456-7890', '123 Elm Street'),
