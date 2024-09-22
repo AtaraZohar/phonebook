@@ -34,9 +34,9 @@ Access the API: The API will be available at http://localhost:8080
 
 - POST /contacts   Create a new contact by sending contact details in the request body.
 
-- PUT /contacts/:id   Update an existing contact by ID, using the provided contact details in the request body.
+- PUT /contacts/{id}   Update an existing contact by ID, using the provided contact details in the request body.
 
-- DELETE /contacts/:id   Delete a contact by its ID.
+- DELETE /contacts/{id}   Delete a contact by its ID.
 ```
 
 ### Get Contacts
@@ -78,7 +78,7 @@ Access the API: The API will be available at http://localhost:8080
 
 ### Update Contact
 
-- **Endpoint:** `PUT /contacts/:id`
+- **Endpoint:** `PUT /contacts/{id}`
 
 - **Request Body:**
   ```json
@@ -95,7 +95,7 @@ Access the API: The API will be available at http://localhost:8080
 
 ### Delete Contact
 
-  - **Endpoint:** `DELETE /contacts/:id`
+  - **Endpoint:** `DELETE /contacts/{id}`
   - **Response:**
     - `204 No Content`: If the contact is deleted successfully.
     - `404 Not Found`: If the contact does not exist.
