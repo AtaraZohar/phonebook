@@ -6,14 +6,14 @@ services:
     ports:
       - '5432:5432'
     environment:
-      POSTGRES_USER: myuser
+      POSTGRES_USER: atara
       POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: mydatabase
+      POSTGRES_DB: phonebook
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./config:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U myuser"]
+      test: ["CMD-SHELL", "pg_isready -U atara"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -26,7 +26,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      - DATABASE_URL=postgres://myuser:mypassword@db:5432/mydatabase
+      - DATABASE_URL=postgres://atara:mypassword@db:5432/phonebook
 
   tests:
     build: .
@@ -34,7 +34,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      - DATABASE_URL=postgres://myuser:mypassword@db:5432/mydatabase
+      - DATABASE_URL=postgres://atara:mypassword@db:5432/phonebook
     command: go test ./tests
 
 volumes:
